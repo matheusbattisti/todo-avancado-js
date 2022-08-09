@@ -5,3 +5,7 @@
 .done {
   background: red;
 }
+
+button i {
+  pointer-events: none;
+}

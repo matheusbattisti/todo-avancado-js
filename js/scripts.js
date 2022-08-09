@@ -5,6 +5,10 @@ const todoList = document.querySelector("#todo-list");
 const editForm = document.querySelector("#edit-form");
 const editInput = document.querySelector("#edit-input");
 const cancelEditBtn = document.querySelector("#cancel-edit-btn");
+const searchInput = document.querySelector("#search-input");
+const eraseBtn = document.querySelector("#erase-button");
+const filterBtn = document.querySelector("#filter-select");
+
 let oldInputValue;
 
 // Funções
@@ -17,15 +21,18 @@ const saveTodo = (text) => {
   todo.appendChild(todoTitle);
 
   const doneBtn = document.createElement("button");
-  doneBtn.innerHTML = '<i class="fa-solid fa-check finish-todo"></i>';
+  doneBtn.classList.add("finish-todo");
+  doneBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
   todo.appendChild(doneBtn);
 
   const editBtn = document.createElement("button");
-  editBtn.innerHTML = '<i class="fa-solid fa-pen edit-todo"></i>';
+  editBtn.classList.add("edit-todo");
+  editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
   todo.appendChild(editBtn);
 
   const deleteBtn = document.createElement("button");
-  deleteBtn.innerHTML = '<i class="fa-solid fa-xmark edit-todo"></i>';
+  deleteBtn.classList.add("remove-todo");
+  deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
   todo.appendChild(deleteBtn);
 
   todoList.appendChild(todo);
@@ -49,6 +56,54 @@ const updateTodo = (text) => {
       todoTitle.innerText = text;
     }
   });
+};
+
+const getSearchedTodos = (search) => {
+  const todos = document.querySelectorAll(".todo");
+
+  todos.forEach((todo) => {
+    const todoTitle = todo.querySelector("h3").innerText.toLowerCase();
+
+    todo.style.display = "flex";
+
+    console.log(todoTitle);
+
+    if (!todoTitle.includes(search)) {
+      todo.style.display = "none";
+    }
+  });
+};
+
+const filterTodos = (filterValue) => {
+  const todos = document.querySelectorAll(".todo");
+
+  switch (filterValue) {
+    case "all":
+      todos.forEach((todo) => (todo.style.display = "flex"));
+
+      break;
+
+    case "done":
+      todos.forEach((todo) =>
+        todo.classList.contains("done")
+          ? (todo.style.display = "flex")
+          : (todo.style.display = "none")
+      );
+
+      break;
+
+    case "todo":
+      todos.forEach((todo) =>
+        !todo.classList.contains("done")
+          ? (todo.style.display = "flex")
+          : (todo.style.display = "none")
+      );
+
+      break;
+
+    default:
+      break;
+  }
 };
 
 // Eventos
@@ -94,11 +149,29 @@ editForm.addEventListener("submit", (e) => {
 
   const editInputValue = editInput.value;
 
-  console.log(editInputValue);
-
   if (editInputValue) {
     updateTodo(editInputValue);
   }
 
   toggleForms();
+});
+
+searchInput.addEventListener("keyup", (e) => {
+  const search = e.target.value;
+
+  getSearchedTodos(search);
+});
+
+eraseBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  searchInput.value = "";
+
+  searchInput.dispatchEvent(new Event("keyup"));
+});
+
+filterBtn.addEventListener("change", (e) => {
+  const filterValue = e.target.value;
+
+  filterTodos(filterValue);
 });
